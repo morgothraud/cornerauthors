@@ -52,13 +52,19 @@ public class MainActivity extends BaseActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
 
-        setContentView(R.layout.activity_main);
+    //    setContentView(R.layout.activity_main);
         super.onCreate(savedInstanceState);
-
+        getLayoutInflater().inflate(R.layout.activity_main, frameLayout);
         listView = (ListView) findViewById(R.id.list);
         adapter = new CustomListAdapter(this, listItemElementList);
         listView.setAdapter(adapter);
 
+
+        /**
+         * Setting title and itemChecked
+         */
+        mDrawerList.setItemChecked(position, true);
+       // setTitle(listArray[position]);
 
         pDialog = new ProgressDialog(this);
         // Showing progress dialog before making http request

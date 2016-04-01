@@ -20,8 +20,10 @@ public class ReadArticleActivity extends BaseActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        setContentView(R.layout.read_article_layout);
+       // setContentView(R.layout.read_article_layout);
+        getLayoutInflater().inflate(R.layout.read_article_layout, frameLayout);
         super.onCreate(savedInstanceState);
+        mDrawerList.setItemChecked(position, true);
         this.savedInstanceState = savedInstanceState;
         articleContent_TextView = (TextView)findViewById(R.id.articleContent_TextView);
         articleContent_TextView.setMovementMethod(new ScrollingMovementMethod());

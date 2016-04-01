@@ -2,28 +2,41 @@ package com.example.eray.customlistview;
 
 
 import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
 import android.text.Html;
 import android.text.method.ScrollingMovementMethod;
 import android.util.Log;
+import android.view.LayoutInflater;
+import android.view.View;
 import android.widget.TextView;
 
 
 public class SplashActivity extends BaseActivity {
 
-    // Splash screen timer
+   // Splash screen timer
    // private static int SPLASH_TIME_OUT = 3000;
     TextView articleContent_TextView;
     Bundle savedInstanceState;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        setContentView(R.layout.activity_splash);
+      //setContentView(R.layout.activity_splash);
+        getLayoutInflater().inflate(R.layout.activity_splash, frameLayout);
         super.onCreate(savedInstanceState);
+        mDrawerList.setItemChecked(position, true);
         this.savedInstanceState = savedInstanceState;
-        articleContent_TextView = (TextView)findViewById(R.id.articleContent_TextView);
+
+        Context context = getApplicationContext();
+        LayoutInflater inflater = (LayoutInflater) context.getSystemService( Context.LAYOUT_INFLATER_SERVICE );
+        View view = inflater.inflate(R.layout.activity_splash, frameLayout);
+        articleContent_TextView = (TextView) view.findViewById(R.id.articleContent_TextView);
+
+     //   articleContent_TextView = (TextView)findViewById(R.id.articleContent_TextView);
+      //  articleContent_TextView.setText("Step One: blast egg");
+
         articleContent_TextView.setMovementMethod(new ScrollingMovementMethod());
         printHtmlContent();
 /*        new Handler().postDelayed(new Runnable() {
@@ -47,7 +60,6 @@ public class SplashActivity extends BaseActivity {
         }, SPLASH_TIME_OUT);*/
     }
 
-
     public void printHtmlContent(){
         try {
             String content = getContentFromExtra();
@@ -59,10 +71,7 @@ public class SplashActivity extends BaseActivity {
         } catch (Exception e) {
             e.printStackTrace();
         }
-
-
     }
-
 
     public String getContentFromExtra(){
         String newString;
@@ -78,5 +87,4 @@ public class SplashActivity extends BaseActivity {
         }
         return newString;
     }
-
 }

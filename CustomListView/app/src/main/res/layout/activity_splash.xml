@@ -8,33 +8,17 @@
 
     <!-- As the main content view, the view below consumes the entire
          space available using match_parent in both dimensions. -->
-    <FrameLayout
-        android:descendantFocusability="blocksDescendants"
-        android:id="@+id/content_frame"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent" />
-
-    <ListView
-        android:id="@+id/left_drawer"
-        android:layout_width="240dp"
-        android:layout_height="match_parent"
-        android:layout_gravity="start"
-        android:choiceMode="singleChoice"
-        android:clickable="true"
-        android:divider="@android:color/transparent"
-        android:dividerHeight="0dp"
-        android:background="#111"/>
-
-
     <LinearLayout
         android:orientation="vertical" android:layout_width="match_parent"
-        android:layout_height="match_parent"
+        android:layout_height="wrap_content"
         android:id ="@+id/read_article_layout_id">
 
         <TextView
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
             android:id="@+id/articleContent_TextView"
+            android:textColor="#000000"
+            android:fontFamily="sans-serif"
             android:scrollbars = "vertical"/>
     </LinearLayout>
 

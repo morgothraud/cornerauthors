@@ -24,8 +24,9 @@ public class ImageAdapter extends ArrayAdapter<String> {
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
         if (convertView == null) {
-            LayoutInflater inflater = LayoutInflater.from(getContext());
-            convertView = inflater.inflate(R.layout.list_item, null);
+
+        LayoutInflater inflater = LayoutInflater.from(getContext());
+          convertView = inflater.inflate(R.layout.list_item, null);
         }
 
         Picasso.with(getContext())
