@@ -44,7 +44,7 @@ public class ListNewsPapersActivity extends BaseActivity {
         images.add("https://upload.wikimedia.org/wikipedia/tr/1/14/Sozculogo248x90.png");
        // images.add("http://s.hurriyet.com.tr/static/images/hurriyet/hurriyet-logo.png");
       //  newsListView = (ListView)findViewById(R.id.newsPaperList);
-       // newsListView.setAdapter(new ImageAdapter(this, R.layout.list_item, images));
+         newsListView.setAdapter(new ImageAdapter(this, R.layout.list_item, images));
     }
 
 }

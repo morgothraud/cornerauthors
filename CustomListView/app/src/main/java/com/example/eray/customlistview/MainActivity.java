@@ -1,9 +1,13 @@
 package com.example.eray.customlistview;
 
+import android.app.Activity;
+import android.app.LauncherActivity;
 import android.app.ProgressDialog;
+import android.content.Context;
 import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
+import android.support.v7.view.menu.ListMenuItemView;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Log;
@@ -15,6 +19,7 @@ import android.widget.AdapterView;
 import android.widget.ListView;
 import android.widget.SearchView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
@@ -22,11 +27,12 @@ import com.android.volley.VolleyLog;
 import com.android.volley.toolbox.JsonArrayRequest;
 import com.daimajia.swipe.SwipeLayout;
 
-
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.FileOutputStream;
+import java.io.OutputStreamWriter;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -40,10 +46,11 @@ public class MainActivity extends BaseActivity {
     private static final String SabahUrl = "https://gist.githubusercontent.com/anonymous/7dae51e5c07f078a023b/raw/822a479bbacda6e72347aec4f286f039bc001ad2/blob.json";
     private static final String SabahRadikalUrl = "https://gist.githubusercontent.com/anonymous/3dd0f3d5898527d16020/raw/4373a6aa52596924b5184302b3676e5b5c21fd3e/blob.json";
     private static final String RadikalUrl = "https://gist.githubusercontent.com/anonymous/8b92250d390e693a6d7d/raw/3f830f62b6309ba865e0f80fd328a838dc69f142/blob.json";
+    private static final String MilliyetUrl = "https://gist.githubusercontent.com/anonymous/98e7ef90369ed7973949/raw/d108a066f826b76d13177f109e65877d41d5950f/json_milliyet";
     private ProgressDialog pDialog;
     private List<ListItemElement> listItemElementList = new ArrayList<ListItemElement>();
     private ArrayList<ListItemElement> array_sort = new ArrayList<>();
-    private ListView listView;
+    public ListView listView;
     private CustomListAdapter adapter;
     int textlength;
     TextView search_EditText;
@@ -58,8 +65,6 @@ public class MainActivity extends BaseActivity {
         listView = (ListView) findViewById(R.id.list);
         adapter = new CustomListAdapter(this, listItemElementList);
         listView.setAdapter(adapter);
-
-
         /**
          * Setting title and itemChecked
          */
@@ -75,10 +80,12 @@ public class MainActivity extends BaseActivity {
         // Creating volley request obj
         listFreshArticles(SabahUrl,"Sabah");
         listFreshArticles(RadikalUrl,"Radikal");
+        listFreshArticles(MilliyetUrl,"Milliyet");
 
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+
                 Intent splash = new Intent(MainActivity.this,SplashActivity.class);
                 splash.putExtra("content", listItemElementList.get(Integer.parseInt((String)view.getTag())).getContent());
                 startActivityForResult(splash, 1);
@@ -86,11 +93,23 @@ public class MainActivity extends BaseActivity {
         });
     }
 
+    public void setOnClickforListViewItem( ){
+        listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+
+                Intent splash = new Intent(MainActivity.this,SplashActivity.class);
+                splash.putExtra("content", listItemElementList.get(Integer.parseInt((String)view.getTag())).getContent());
+                startActivityForResult(splash, 1);
+            }
+        });
+    }
     public void listFreshArticles(String jsonUrl,final String newpaper){
         JsonArrayRequest billionaireReq = new JsonArrayRequest(jsonUrl,
                 new Response.Listener<JSONArray>() {
                     @Override
                     public void onResponse(JSONArray response) {
+
                         Log.d(TAG, response.toString());
                         hidePDialog();
 
@@ -256,6 +275,8 @@ public class MainActivity extends BaseActivity {
     public void updateAdapter() {
         adapter.notifyDataSetChanged(); //update adapter
        // totalClassmates.setText("(" + friendsList.size() + ")"); //update total friends in list
+
     }
+
 
 }

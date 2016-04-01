@@ -26,7 +26,7 @@ public class ImageAdapter extends ArrayAdapter<String> {
         if (convertView == null) {
 
         LayoutInflater inflater = LayoutInflater.from(getContext());
-          convertView = inflater.inflate(R.layout.list_item, null);
+          convertView = inflater.inflate(R.layout.newspaper_images, null);
         }
 
         Picasso.with(getContext())

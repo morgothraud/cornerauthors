@@ -36,6 +36,8 @@
         </activity>
         <activity android:name=".ListNewsPapersActivity" >
         </activity>
+        <activity android:name=".SavedArticlesActivity" >
+        </activity>
     </application>
 	
 	

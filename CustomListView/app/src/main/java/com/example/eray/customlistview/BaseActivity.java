@@ -9,6 +9,7 @@ package com.example.eray.customlistview;
  */
 
         import android.app.Activity;
+        import android.content.Context;
         import android.content.Intent;
         import android.os.Bundle;
         import android.support.v4.app.ActionBarDrawerToggle;
@@ -24,6 +25,10 @@ package com.example.eray.customlistview;
         import android.widget.ListView;
         import android.widget.Toast;
 
+        import java.io.FileOutputStream;
+        import java.util.ArrayList;
+        import java.util.List;
+
 /**
  * @author dipenp
  *
@@ -32,7 +37,6 @@ package com.example.eray.customlistview;
  * This activity layout contain one frame layout in which we will add our child activity layout.
  */
 public class BaseActivity extends Activity {
-
 
 
 
@@ -166,20 +170,22 @@ public class BaseActivity extends Activity {
                 startActivity(new Intent(this, MainActivity.class));
                 break;
             case 1:
-                Log.d("test","entered");
-                startActivity(new Intent(this, ListNewsPapersActivity.class));
+                Log.d("test", "entered");
+
                 break;
             case 2:
                 Log.d("test","entered");
                // startActivity(new Intent(this, Item3Activity.class));
+                startActivity(new Intent(this, ListNewsPapersActivity.class));
                 break;
             case 3:
                 Log.d("test","entered");
+                startActivity(new Intent(this, SavedArticlesActivity.class));
               //  startActivity(new Intent(this, Item4Activity.class));
                 break;
             case 4:
-                Log.d("test","entered");
-             //   startActivity(new Intent(this, Item5Activity.class));
+                Log.d("test", "entered");
+
                 break;
 
             default:
@@ -224,7 +230,7 @@ public class BaseActivity extends Activity {
 
     }
 
-    /* We can override onBackPressed method to toggle navigation drawer*/
+   /*
     @Override
     public void onBackPressed() {
         if(mDrawerLayout.isDrawerOpen(mDrawerList)){
@@ -232,7 +238,9 @@ public class BaseActivity extends Activity {
         }else {
             mDrawerLayout.openDrawer(mDrawerList);
         }
-    }
+    }*/
+
+
 
 }
 
