@@ -22,8 +22,11 @@ public class Article {
 
     }
 
-    public Article(String header, String content, Date date, Author author){
-
+    public Article(String header, String content, String date, Author author){
+    this.header = header;
+        this.content = content;
+        this.date= date;
+        this.author = author;
     }
 
     public String getUrl(){

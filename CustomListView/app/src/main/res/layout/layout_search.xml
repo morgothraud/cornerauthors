@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <EditText xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/edtSearch"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@drawable/action_search"
@@ -9,3 +10,5 @@
     android:inputType="text"
     android:textColor="@android:color/black"
     android:textCursorDrawable="@android:color/black" />
+
+

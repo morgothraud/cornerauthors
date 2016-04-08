@@ -31,7 +31,7 @@ public class SavedArticlesActivity extends BaseActivity {
     ListView newsListView;
     ListView listView;
     MainActivity m;
-    private CustomListAdapter adapter;
+    public CustomListAdapter adapter;
     List<ListItemElement> listItemElementList = new ArrayList<ListItemElement>();
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -40,12 +40,12 @@ public class SavedArticlesActivity extends BaseActivity {
         getLayoutInflater().inflate(R.layout.saved_articles, frameLayout);
         // setTitle(listArray[position]);
 
-
         listView = (ListView) findViewById(R.id.listSaved);
         adapter = new CustomListAdapter(this, listItemElementList);
         listView.setAdapter(adapter);
+        listView.setEmptyView(findViewById(R.id.empty));
         mDrawerList.setItemChecked(position, true);
-        getActionBar().setDisplayHomeAsUpEnabled(true);
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         ReadBtn();
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
@@ -53,6 +53,9 @@ public class SavedArticlesActivity extends BaseActivity {
 
                 Intent splash = new Intent(SavedArticlesActivity.this, SplashActivity.class);
                 splash.putExtra("content", listItemElementList.get(Integer.parseInt((String) view.getTag())).getContent());
+
+                ListItemElement le = (ListItemElement)(listView.getItemAtPosition(position));
+                splash.putExtra("title",le.getWorth());
                 startActivityForResult(splash, 1);
             }
         });

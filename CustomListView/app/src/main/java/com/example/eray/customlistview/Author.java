@@ -11,7 +11,11 @@ public class Author {
     private ArrayList<Article> articles;
     private int authorId;
 
-    public Author(){
+    public Author(String name){
+    this.name = name;
+    }
+
+    public Author() {
 
     }
 

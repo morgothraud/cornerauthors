@@ -10,6 +10,8 @@ import android.text.Html;
 import android.text.method.ScrollingMovementMethod;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
 import android.view.View;
 import android.widget.TextView;
 
@@ -28,7 +30,8 @@ public class SplashActivity extends BaseActivity {
         super.onCreate(savedInstanceState);
         mDrawerList.setItemChecked(position, true);
         this.savedInstanceState = savedInstanceState;
-
+//        String message = getIntent().getStringExtra("title").toString();
+     //   setTitle(message);
         Context context = getApplicationContext();
         LayoutInflater inflater = (LayoutInflater) context.getSystemService( Context.LAYOUT_INFLATER_SERVICE );
         View view = inflater.inflate(R.layout.activity_splash, frameLayout);
@@ -86,5 +89,15 @@ public class SplashActivity extends BaseActivity {
             newString= (String) savedInstanceState.getSerializable("content");
         }
         return newString;
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+
+        MenuInflater inflater = getMenuInflater();
+        inflater.inflate(R.menu.menu_main, menu);
+        menu.findItem(R.id.action_search).setVisible(false);
+
+        return true;
     }
 }

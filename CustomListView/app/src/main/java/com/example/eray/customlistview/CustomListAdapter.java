@@ -34,6 +34,7 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
+import java.util.Date;
 import java.util.List;
 
 public class CustomListAdapter extends BaseAdapter {
@@ -121,7 +122,6 @@ public class CustomListAdapter extends BaseAdapter {
             // Wealth Source
             source.setText(String.valueOf(m.getSource()));
 
-
             worth.setText(String.valueOf(m.getWorth()));
 
             // release year
@@ -132,7 +132,7 @@ public class CustomListAdapter extends BaseAdapter {
             //    holder.name.setText(getItem(position));
 
             //handling buttons event
-            holder.btnDown.setOnClickListener(onEditListener(position, holder));
+            holder.btnDown.setOnClickListener(onSaveDelete(position, holder));
 
             return convertView;
         }
@@ -327,6 +327,68 @@ public class CustomListAdapter extends BaseAdapter {
             @Override
             public void onClick(View v) {
                 //friends.remove(position);
+
+
+                //date article name authorName authorImage content
+                try {
+                    FileOutputStream fileout=activity.openFileOutput("favoriteAuthors.txt", activity.MODE_APPEND);
+                    OutputStreamWriter outputWriter=new OutputStreamWriter(fileout);
+                    ListItemElement le = (ListItemElement)(activity.listView.getItemAtPosition(position));
+                    try {
+                        JSONObject obj = new JSONObject();
+                        JSONArray arr = new JSONArray();
+                        obj.put("authorName",le.getName());
+                        obj.put("authorImage", le.getThumbnailUrl());
+                        obj.put("date",le.getYear());
+                        obj.put("articleName",le.getWorth());
+                        obj.put("content",le.getContent());
+                        arr.put(obj);
+                        outputWriter.write(obj.toString()+",");
+                    } catch (Throwable t) {
+                        Log.e("My App", "Could not parse malformed JSON: \"" + "\"");
+                        Log.w("FATAL", t.toString());
+                    }
+                    outputWriter.close();
+                    //display file saved message
+                    Toast.makeText(activity.getBaseContext(), le.getName()+" is added to Favorites!",
+                            Toast.LENGTH_SHORT).show();
+                    holder.swipeLayout.close();
+                    activity.updateAdapter();
+
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+
+                holder.swipeLayout.close();
+                activity.updateAdapter();
+            }
+        };
+    }
+
+
+    private View.OnClickListener onSaveDelete(final int position, final ViewHolder holder) {
+        return new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                //friends.remove(position);
+
+                    //reading text from file
+                    try {
+                        FileInputStream fileIn=savedActivity.openFileInput("savedArticles.txt");
+                        InputStreamReader InputRead= new InputStreamReader(fileIn);
+                        char[] inputBuffer= new char[100];
+                        String s="";
+                        int charRead;
+                        while ((charRead=InputRead.read(inputBuffer))>0) {
+                            // char to string conversion
+                            String readstring=String.copyValueOf(inputBuffer,0,charRead);
+                            s +=readstring;
+                        }
+                        InputRead.close();
+
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
 
 
                 //date article name authorName authorImage content

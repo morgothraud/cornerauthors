@@ -29,7 +29,7 @@ public class ListNewsPapersActivity extends BaseActivity {
        // setTitle(listArray[position]);
 
         mDrawerList.setItemChecked(position, true);
-        getActionBar().setDisplayHomeAsUpEnabled(true);
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         createsNewPaperListMenu();
     }
 

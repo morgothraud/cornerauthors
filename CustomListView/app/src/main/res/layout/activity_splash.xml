@@ -14,11 +14,14 @@
         android:id ="@+id/read_article_layout_id">
 
         <TextView
+            android:fontFamily="sans-serif"
+            android:textStyle="normal"
+            android:textSize="16dp"
+            android:layout_margin="20dp"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:id="@+id/articleContent_TextView"
             android:textColor="#000000"
-            android:fontFamily="sans-serif"
             android:scrollbars = "vertical"/>
     </LinearLayout>
 

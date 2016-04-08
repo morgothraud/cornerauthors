@@ -12,6 +12,12 @@
         <item>Gazeteler</item>
         <item>Kaydedilenler</item>
     </string-array>
+    <string-array name="suggestions">
+        <item>Sabah</item>
+        <item>Tüm Yazarlar</item>
+        <item>Gazeteler</item>
+        <item>Kaydedilenler</item>
+    </string-array>
     <string name="drawer_open">Open navigation drawer</string>
     <string name="drawer_close">Close navigation drawer</string>
     <string name="action_websearch">Web search</string>

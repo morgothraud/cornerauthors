@@ -28,4 +28,10 @@ dependencies {
     compile 'org.apache.httpcomponents:httpclient-android:4.3.5.1'
     compile files('libs/picasso-2.5.2.jar')
     compile "com.daimajia.swipelayout:library:1.2.0@aar"
+    compile('com.mikepenz:materialdrawer:5.1.6@aar') {
+        transitive = true
+    }
+    compile 'com.miguelcatalan:materialsearchview:1.4.0'
+    compile 'de.hdodenhof:circleimageview:2.0.0'
+
 }

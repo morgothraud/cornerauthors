@@ -51,6 +51,7 @@
             android:layout_height="wrap_content"
             android:layout_alignTop="@+id/thumbnail"
             android:layout_toRightOf="@+id/thumbnail"
+            android:textColor="@color/colorPrimaryDark"
             android:textSize="@dimen/name"
             android:textStyle="bold" />
 
