@@ -1,10 +1,7 @@
-
-<android.support.v4.widget.DrawerLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
-    android:id="@+id/drawer_layout"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:descendantFocusability="blocksDescendants" >
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical" android:layout_width="match_parent"
+    android:layout_height="match_parent">
 
     <!-- As the main content view, the view below consumes the entire
          space available using match_parent in both dimensions. -->
@@ -13,6 +10,13 @@
         android:layout_height="wrap_content"
         android:id ="@+id/read_article_layout_id">
 
+        <ScrollView
+            android:id="@+id/horizontalScrollView1"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentTop="true"
+            android:scrollbars="none" >
         <TextView
             android:fontFamily="sans-serif"
             android:textStyle="normal"
@@ -23,6 +27,7 @@
             android:id="@+id/articleContent_TextView"
             android:textColor="#000000"
             android:scrollbars = "vertical"/>
+        </ScrollView>
     </LinearLayout>
 
-</android.support.v4.widget.DrawerLayout>
+</LinearLayout>

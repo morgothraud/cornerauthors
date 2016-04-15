@@ -6,6 +6,8 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
 import android.widget.AdapterView;
 import android.widget.ListView;
 import android.widget.Toast;
@@ -39,7 +41,6 @@ public class SavedArticlesActivity extends BaseActivity {
         // setContentView(R.layout.newspapers_list);
         getLayoutInflater().inflate(R.layout.saved_articles, frameLayout);
         // setTitle(listArray[position]);
-
         listView = (ListView) findViewById(R.id.listSaved);
         adapter = new CustomListAdapter(this, listItemElementList);
         listView.setAdapter(adapter);
@@ -61,31 +62,23 @@ public class SavedArticlesActivity extends BaseActivity {
         });
     }
 
+
     public void listFreshArticles(String file,final String newpaper) throws JSONException {
 
         String tmp = file;
+        Log.d("tmp",tmp);
         file = "{ 'articles': [" + tmp + "]}";
 
+       // Log.d("SIZE", file.length() + " " +  file.charAt(5234));
         JSONObject obj = new JSONObject(file);
-      //  JSONArray arr = new JSONArray();
-       // obj.put("articles",arr);
-//        Log.w("FILEEE", file.substring(file.length()-100,+file.length()));
-
-     //   JSONObject elementOne = new JSONObject(file);
-
-    //    arr.put(elementOne);
-
-        //JSONObject jo = new JSONObject(file);
-      //  ja.put(jo);
         Log.w("URYİ",obj.toString());
-       // Log.w("OBJE", elementOne.toString().substring(elementOne.toString().length() - 200, +elementOne.toString().length()));
-       // Log.w("FILEEE", arr.toString().substring(arr.length()-100,+arr.length()));
         JSONArray jsonArray = obj.getJSONArray("articles");
 
         Log.w("Arrsize", String.valueOf(jsonArray.length()));
         for (int i = 0; i < jsonArray.length(); i++) {
 
             JSONObject explrObject = jsonArray.getJSONObject(i);
+
             ListItemElement listItemElement = new ListItemElement();
             listItemElement.setName(explrObject.getString("authorName"));
             listItemElement.setThumbnailUrl(explrObject.getString("authorImage"));
@@ -98,43 +91,15 @@ public class SavedArticlesActivity extends BaseActivity {
             // adding Billionaire to listItemElement array
             listItemElementList.add(listItemElement);
           //  Log.e("Name",explrObject.getString("authorName"));
+
         }
-
-     /*   JSONObject jobi = new JSONObject(file);
-        Iterator<String> iter = jobi.keys();
-        while (iter.hasNext()) {
-            String key = iter.next();
-            try {
-                Object value = finalOb.get(key);
-                Log.w("VALUEEE", value.toString());
-            } catch (JSONException e) {
-                // Something went wrong!
-            }
-        }*/
-
-      /*  JSONObject obj = new JSONObject(file);
-
-        Iterator<String> iter = obj.keys();
-        while (iter.hasNext()) {
-            String key = iter.next();
-            try {
-                ListItemElement listItemElement = new ListItemElement();
-                listItemElement.setName(obj.getString("authorName"));
-                listItemElement.setThumbnailUrl(obj.getString("authorImage"));
-                listItemElement.setWorth(obj.getString("articleName"));
-                listItemElement.setYear(obj.getString("date"));
-                listItemElement.setSource(newpaper);
-                listItemElement.setContent(obj.getString("content"));
-
-                // adding Billionaire to listItemElement array
-                listItemElementList.add(listItemElement);
-            } catch (JSONException e) {
-                // Something went wrong!
-            }
-        }*/
         adapter.notifyDataSetChanged();
       //  listView.invalidateViews();
 
+    }
+
+    public Object getSelectedItem() {
+       return listView.getSelectedItem();
     }
 
 
@@ -192,5 +157,12 @@ public class SavedArticlesActivity extends BaseActivity {
                 startActivityForResult(splash, 1);
             }
         });
+    }
+
+    public void updateAdapter() {
+       // this.recreate();
+        adapter.notifyDataSetChanged();
+        // totalClassmates.setText("(" + friendsList.size() + ")"); //update total friends in list
+
     }
 }

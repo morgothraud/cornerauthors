@@ -68,13 +68,10 @@ public class FavoriteAuthorsActivity extends BaseActivity {
         Log.w("Arrsize", String.valueOf(jsonArray.length()));
         for (int i = 0; i < jsonArray.length(); i++) {
             JSONObject explrObject = jsonArray.getJSONObject(i);
-            ListItemElement listItemElement = new ListItemElement();
+            ListItemElement listItemElement = new ListItemElement();;
             listItemElement.setName(explrObject.getString("authorName"));
             listItemElement.setThumbnailUrl(explrObject.getString("authorImage"));
-            listItemElement.setWorth(explrObject.getString("articleName"));
-            listItemElement.setYear(explrObject.getString("date"));
             listItemElement.setSource(newpaper);
-            listItemElement.setContent(explrObject.getString("content"));
             listItemElement.setTag(String.valueOf(i));
 
             // adding Billionaire to listItemElement array

@@ -6,17 +6,19 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
+import android.support.v7.app.AppCompatActivity;
 import android.text.Html;
 import android.text.method.ScrollingMovementMethod;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.TextView;
 
 
-public class SplashActivity extends BaseActivity {
+public class SplashActivity extends AppCompatActivity {
 
    // Splash screen timer
    // private static int SPLASH_TIME_OUT = 3000;
@@ -25,22 +27,22 @@ public class SplashActivity extends BaseActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-      //setContentView(R.layout.activity_splash);
-        getLayoutInflater().inflate(R.layout.activity_splash, frameLayout);
+       setContentView(R.layout.activity_splash);
         super.onCreate(savedInstanceState);
-        mDrawerList.setItemChecked(position, true);
         this.savedInstanceState = savedInstanceState;
-//        String message = getIntent().getStringExtra("title").toString();
-     //   setTitle(message);
+        String message = getIntent().getStringExtra("title").toString();
+        setTitle(message);
         Context context = getApplicationContext();
         LayoutInflater inflater = (LayoutInflater) context.getSystemService( Context.LAYOUT_INFLATER_SERVICE );
-        View view = inflater.inflate(R.layout.activity_splash, frameLayout);
-        articleContent_TextView = (TextView) view.findViewById(R.id.articleContent_TextView);
+        articleContent_TextView = (TextView) findViewById(R.id.articleContent_TextView);
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        getSupportActionBar().setDisplayShowHomeEnabled(true);
+        getSupportActionBar().setHomeButtonEnabled(true);
 
      //   articleContent_TextView = (TextView)findViewById(R.id.articleContent_TextView);
       //  articleContent_TextView.setText("Step One: blast egg");
 
-        articleContent_TextView.setMovementMethod(new ScrollingMovementMethod());
+       // articleContent_TextView.setMovementMethod(new ScrollingMovementMethod());
         printHtmlContent();
 /*        new Handler().postDelayed(new Runnable() {
 
@@ -99,5 +101,17 @@ public class SplashActivity extends BaseActivity {
         menu.findItem(R.id.action_search).setVisible(false);
 
         return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case android.R.id.home:
+                // app icon in action bar clicked; goto parent activity.
+                this.finish();
+                return true;
+            default:
+                return super.onOptionsItemSelected(item);
+        }
     }
 }

@@ -7,6 +7,8 @@ import android.content.Context;
 import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Parcelable;
 import android.speech.RecognizerIntent;
 import android.support.design.widget.Snackbar;
 import android.support.v4.widget.DrawerLayout;
@@ -22,6 +24,8 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
 import android.view.inputmethod.EditorInfo;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.AdapterView;
@@ -48,7 +52,6 @@ import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.List;
-
 public class MainActivity extends BaseActivity {
 
     // Log tag
@@ -95,12 +98,10 @@ public class MainActivity extends BaseActivity {
        // hidePDialog();
 
         // Creating volley request obj
-        listFreshArticles(MilliyetUrl, "Milliyet");
-        listFreshArticles(RadikalUrl,"Radikal");
         listFreshArticles(SabahUrl,"Sabah");
+        listFreshArticles(RadikalUrl,"Radikal");
+        listFreshArticles(MilliyetUrl, "Milliyet");
         listFreshArticles(CumhuriyetUrl,"Cumhuriyet");
-
-
         setOnClickforListViewItem();
 
         searchView = (MaterialSearchView) findViewById(R.id.search_view);
@@ -111,9 +112,23 @@ public class MainActivity extends BaseActivity {
         searchView.setOnQueryTextListener(new MaterialSearchView.OnQueryTextListener() {
             @Override
             public boolean onQueryTextSubmit(String query) {
+          /*      temp = listItemElementList;
+                listItemElementList.clear();
+                listItemElementList.addAll(array_sort);*/
+
+                Intent intent = new Intent();
+                intent.setClass(MainActivity.this, SearchActivity.class);
+                Bundle bundleObject = new Bundle();
+                bundleObject.putParcelableArrayList("items", (ArrayList<? extends Parcelable>) array_sort);
+                intent.putExtras(bundleObject);
+                intent.putExtra("title",query);
+                startActivity(intent);
+
+                //listView.setAdapter(new CustomListAdapter(MainActivity.this, array_sort));
+               // adapter.notifyDataSetChanged();
+
                 Snackbar.make(findViewById(R.id.drawer_layout), "Query: " + query, Snackbar.LENGTH_LONG)
                         .show();
-
 
                 return false;
             }
@@ -121,8 +136,6 @@ public class MainActivity extends BaseActivity {
             @Override
             public boolean onQueryTextChange(String newText) {
                 //Do some magic
-
-
                 search_EditText = (TextView) findViewById(R.id.search_src_text);
                 search_EditText.setText(newText);
                 search_EditText.addTextChangedListener(textWatcher);
@@ -136,13 +149,26 @@ public class MainActivity extends BaseActivity {
                 //Do some magic
                 DrawerLayout mDrawerLayout = (DrawerLayout)findViewById(R.id.drawer_layout);
                 mDrawerLayout.closeDrawers();
-                getSupportActionBar().hide();
+             //   getSupportActionBar().hide();
             }
 
             @Override
             public void onSearchViewClosed() {
                 //Do some magic
                 getSupportActionBar().show();
+            }
+        });
+
+        listView.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
+            @Override
+            public boolean onItemLongClick(AdapterView<?> arg0, View arg1,
+                                           int pos, long id) {
+                // TODO Auto-generated method stub
+                Snackbar.make(findViewById(R.id.drawer_layout), "IS NOW FAV: " , Snackbar.LENGTH_LONG)
+                        .show();
+
+
+                return true;
             }
         });
 
@@ -155,10 +181,8 @@ public class MainActivity extends BaseActivity {
 
                 Intent splash = new Intent(MainActivity.this,SplashActivity.class);
                 splash.putExtra("content", listItemElementList.get(Integer.parseInt((String)view.getTag())).getContent());
-
                 ListItemElement le = (ListItemElement)(listView.getItemAtPosition(position));
                 splash.putExtra("title",le.getWorth());
-
                 startActivityForResult(splash, 1);
             }
         });

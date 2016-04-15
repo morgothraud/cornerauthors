@@ -1,7 +1,10 @@
 package com.example.eray.customlistview;
 
 
-public class ListItemElement {
+import android.os.Parcel;
+import android.os.Parcelable;
+
+public class ListItemElement implements Parcelable{
 
     private String name, thumbnailUrl;
     private String year;
@@ -10,8 +13,31 @@ public class ListItemElement {
     private String content;
     private String tag;
 
+    public ListItemElement() {
 
+    }
 
+    protected ListItemElement(Parcel in) {
+        name = in.readString();
+        thumbnailUrl = in.readString();
+        year = in.readString();
+        source = in.readString();
+        worth = in.readString();
+        content = in.readString();
+        tag = in.readString();
+    }
+
+    public static final Creator<ListItemElement> CREATOR = new Creator<ListItemElement>() {
+        @Override
+        public ListItemElement createFromParcel(Parcel in) {
+            return new ListItemElement(in);
+        }
+
+        @Override
+        public ListItemElement[] newArray(int size) {
+            return new ListItemElement[size];
+        }
+    };
 
     public String getName() {
         return name;
@@ -67,5 +93,21 @@ public class ListItemElement {
 
     public void setTag(String tag) {
         this.tag = tag;
+    }
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {
+        dest.writeString(name);
+        dest.writeString(thumbnailUrl);
+        dest.writeString(year);
+        dest.writeString(source);
+        dest.writeString(worth);
+        dest.writeString(content);
+        dest.writeString(tag);
     }
 }

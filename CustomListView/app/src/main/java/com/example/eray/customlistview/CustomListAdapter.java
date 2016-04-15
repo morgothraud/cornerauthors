@@ -34,6 +34,7 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -41,8 +42,11 @@ public class CustomListAdapter extends BaseAdapter {
 
     boolean saved = false;
     boolean faved = false;
+    boolean searched = false;
     boolean mained = false;
+    boolean deleted = false;
     private MainActivity activity;
+    private SearchActivity searchActivity;
     private SavedArticlesActivity savedActivity;
     private FavoriteAuthorsActivity favoritesActivity;
     private LayoutInflater inflater;
@@ -55,6 +59,13 @@ public class CustomListAdapter extends BaseAdapter {
         mained=true;
     }
 
+    public CustomListAdapter(SearchActivity activity, List<ListItemElement> billionairesItems) {
+        this.searchActivity = activity;
+        this.billionairesItems = billionairesItems;
+        searched=true;
+
+    }
+
     public CustomListAdapter(SavedArticlesActivity savedArticlesActivity, List<ListItemElement> listItemElementList) {
         this.savedActivity = savedArticlesActivity;
         this.billionairesItems = listItemElementList;
@@ -65,6 +76,10 @@ public class CustomListAdapter extends BaseAdapter {
         this.favoritesActivity = fav;
         this.billionairesItems = listItemElementList;
         faved=true;
+    }
+
+    void destroy() {
+
     }
 
     @Override
@@ -174,6 +189,59 @@ public class CustomListAdapter extends BaseAdapter {
             // Wealth Source
             source.setText(String.valueOf(m.getSource()));
 
+            worth.setText(String.valueOf(m.getWorth()));
+
+            // release year
+            year.setText(String.valueOf(m.getYear()));
+
+            convertView.setTag(String.valueOf(m.getTag()));
+
+            //    holder.name.setText(getItem(position));
+
+            //handling buttons event
+            holder.btnDown.setOnClickListener(onEditListener(position, holder));
+            holder.btnStar.setOnClickListener(onDeleteListener(position, holder));
+
+            return convertView;
+        }
+
+        if(searched==true) {
+            ViewHolder holder;
+            if (inflater == null)
+                inflater = (LayoutInflater) searchActivity
+                        .getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+            if (convertView == null){
+                convertView = inflater.inflate(R.layout.list_item, null);
+                holder = new ViewHolder(convertView);
+                // set tag for holder
+                convertView.setTag(holder);}
+            else {
+                // if holder created, get tag from view
+                // holder = (ViewHolder) convertView.getTag();
+                holder = new ViewHolder(convertView);
+            }
+
+            if (imageLoader == null)
+                imageLoader = AppController.getInstance().getImageLoader();
+            NetworkImageView thumbNail = (NetworkImageView) convertView
+                    .findViewById(R.id.thumbnail);
+            TextView name = (TextView) convertView.findViewById(R.id.name);
+            TextView worth = (TextView) convertView.findViewById(R.id.worth);
+            TextView source = (TextView) convertView.findViewById(R.id.source);
+            TextView year = (TextView) convertView.findViewById(R.id.inYear);
+
+            // getting billionaires data for the row
+            ListItemElement m = billionairesItems.get(position);
+
+            // thumbnail image
+            thumbNail.setImageUrl(m.getThumbnailUrl(), imageLoader);
+
+            // name
+            name.setText(m.getName());
+
+            // Wealth Source
+            source.setText(String.valueOf(m.getSource()));
+
 
             worth.setText(String.valueOf(m.getWorth()));
 
@@ -190,6 +258,7 @@ public class CustomListAdapter extends BaseAdapter {
 
             return convertView;
         }
+
         ViewHolder holder;
         if (inflater == null)
             inflater = (LayoutInflater) activity
@@ -339,9 +408,6 @@ public class CustomListAdapter extends BaseAdapter {
                         JSONArray arr = new JSONArray();
                         obj.put("authorName",le.getName());
                         obj.put("authorImage", le.getThumbnailUrl());
-                        obj.put("date",le.getYear());
-                        obj.put("articleName",le.getWorth());
-                        obj.put("content",le.getContent());
                         arr.put(obj);
                         outputWriter.write(obj.toString()+",");
                     } catch (Throwable t) {
@@ -358,7 +424,6 @@ public class CustomListAdapter extends BaseAdapter {
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
-
                 holder.swipeLayout.close();
                 activity.updateAdapter();
             }
@@ -372,12 +437,13 @@ public class CustomListAdapter extends BaseAdapter {
             public void onClick(View v) {
                 //friends.remove(position);
 
+                    String s="";
                     //reading text from file
                     try {
                         FileInputStream fileIn=savedActivity.openFileInput("savedArticles.txt");
                         InputStreamReader InputRead= new InputStreamReader(fileIn);
                         char[] inputBuffer= new char[100];
-                        String s="";
+
                         int charRead;
                         while ((charRead=InputRead.read(inputBuffer))>0) {
                             // char to string conversion
@@ -385,43 +451,73 @@ public class CustomListAdapter extends BaseAdapter {
                             s +=readstring;
                         }
                         InputRead.close();
-
+                        fileIn.close();
                     } catch (Exception e) {
                         e.printStackTrace();
                     }
 
 
-                //date article name authorName authorImage content
-                try {
-                    FileOutputStream fileout=activity.openFileOutput("favoriteAuthors.txt", activity.MODE_APPEND);
-                    OutputStreamWriter outputWriter=new OutputStreamWriter(fileout);
-                    ListItemElement le = (ListItemElement)(activity.listView.getItemAtPosition(position));
-                    try {
-                        JSONObject obj = new JSONObject();
-                        JSONArray arr = new JSONArray();
-                        obj.put("authorName",le.getName());
-                        obj.put("authorImage", le.getThumbnailUrl());
-                        arr.put(obj);
-                        outputWriter.write(obj.toString()+",");
-                    } catch (Throwable t) {
-                        Log.e("My App", "Could not parse malformed JSON: \"" + "\"");
-                        Log.w("FATAL", t.toString());
-                    }
-                    outputWriter.close();
-                    //display file saved message
-                    Toast.makeText(activity.getBaseContext(), le.getName()+" is added to Favorites!",
-                            Toast.LENGTH_SHORT).show();
-                    holder.swipeLayout.close();
-                    activity.updateAdapter();
+                String tmp = s;
+                Log.d("TUMPN",s);
+                //s = "{ 'articles': [" + tmp + "]}";
+                tmp = "["+tmp+"]";
 
-                } catch (Exception e) {
+                String strFin = s;
+                strFin = strFin.substring(0,strFin.length()-1);
+                strFin = "{ 'articles': [" + strFin + "]}";
+
+                JSONObject obj = null;
+                JSONArray jsonArray = null;
+                try {
+                    obj = new JSONObject(strFin);
+                    jsonArray =obj.getJSONArray("articles");
+                for (int i = 0; i < jsonArray.length(); i++) {
+                    if (i == position)
+                    {
+                        jsonArray.remove(i);
+                    }
+                }
+                    try {
+                        FileOutputStream fileout=savedActivity.openFileOutput("savedArticles.txt", savedActivity.MODE_PRIVATE);
+                        OutputStreamWriter outputWriter=new OutputStreamWriter(fileout);
+                        try {
+                            Log.d("IMP",jsonArray.toString());
+                            String fincik = jsonArray.toString();
+                            fincik = fincik.substring(1,fincik.length()-1);
+                            Log.d("fincik",fincik);
+                            outputWriter.write(replaceNull(fincik+","));
+                        } catch (Throwable t) {
+                            Log.e("My App", "Could not parse malformed JSON: \"" + "\"");
+                            Log.w("FATAL", t.toString());
+                        }
+                        outputWriter.close();
+
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                } catch (JSONException e) {
                     e.printStackTrace();
                 }
-
                 holder.swipeLayout.close();
-                activity.updateAdapter();
+                savedActivity.updateAdapter();
             }
         };
+    }
+
+    public static String replaceNull(String input) {
+        return input.replace(",null","");
+    }
+
+    public static JSONArray asList(JSONArray ja) {
+        int len = ja.length();
+        JSONArray arr = new JSONArray();
+        for (int i = 0; i < len; i++) {
+            JSONObject obj = ja.optJSONObject(i);
+            if (obj != null) {
+                arr.put(obj);
+            }
+        }
+        return arr;
     }
 
     private class ViewHolder {
@@ -433,7 +529,7 @@ public class CustomListAdapter extends BaseAdapter {
         public ViewHolder(View v) {
             swipeLayout = (SwipeLayout)v.findViewById(R.id.swipe_layout);
 
-            if(mained||faved) {
+            if(mained||faved||searched) {
                 btnStar = v.findViewById(R.id.btnStar);
                 btnDown = v.findViewById(R.id.btnDown);
             }
@@ -461,6 +557,10 @@ public class CustomListAdapter extends BaseAdapter {
                                 activity.listView.setEnabled(true);
                                 activity.setOnClickforListViewItem();
                             }
+                            if (searched) {
+                                searchActivity.listView.setEnabled(true);
+                                searchActivity.setOnClickforListViewItem();
+                            }
 
                         }
                     }, 300);
@@ -469,7 +569,7 @@ public class CustomListAdapter extends BaseAdapter {
 
                 @Override
                 public void onUpdate(SwipeLayout layout, int leftOffset, int topOffset) {
-                    Log.i("TEST", "on swiping");
+                   // Log.i("TEST", "on swiping");
                     if(saved) {
                         savedActivity.listView.setEnabled(false);
                         savedActivity.listView.setOnItemClickListener(null);
@@ -480,22 +580,25 @@ public class CustomListAdapter extends BaseAdapter {
                     if(mained){
                         activity.listView.setEnabled(false);
                         activity.listView.setOnItemClickListener(null);}
+                    if(searched){
+                        searchActivity.listView.setEnabled(false);
+                        searchActivity.listView.setOnItemClickListener(null);}
 
                 }
 
                 @Override
                 public void onStartOpen(SwipeLayout layout) {
-                    Log.i("TEST", "on start open");
+                   // Log.i("TEST", "on start open");
                 }
 
                 @Override
                 public void onOpen(SwipeLayout layout) {
-                    Log.i("TEST", "the BottomView totally show");
+                 //   Log.i("TEST", "the BottomView totally show");
                 }
 
                 @Override
                 public void onStartClose(SwipeLayout layout) {
-                    Log.i("", "the BottomView totally close");
+                 //   Log.i("", "the BottomView totally close");
 
                 }
 
