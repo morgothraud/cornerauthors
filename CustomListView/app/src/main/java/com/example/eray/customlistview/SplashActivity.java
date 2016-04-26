@@ -16,6 +16,7 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.TextView;
+import android.widget.Toast;
 
 
 public class SplashActivity extends AppCompatActivity {
@@ -24,6 +25,7 @@ public class SplashActivity extends AppCompatActivity {
    // private static int SPLASH_TIME_OUT = 3000;
     TextView articleContent_TextView;
     Bundle savedInstanceState;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -99,9 +101,12 @@ public class SplashActivity extends AppCompatActivity {
         MenuInflater inflater = getMenuInflater();
         inflater.inflate(R.menu.menu_main, menu);
         menu.findItem(R.id.action_search).setVisible(false);
+        menu.findItem(R.id.action_save).setVisible(true);
 
         return true;
     }
+
+
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
@@ -109,6 +114,10 @@ public class SplashActivity extends AppCompatActivity {
             case android.R.id.home:
                 // app icon in action bar clicked; goto parent activity.
                 this.finish();
+                return true;
+            case R.id.action_save:
+                Toast.makeText(this.getBaseContext(), "Article saved successfully!",
+                        Toast.LENGTH_SHORT).show();
                 return true;
             default:
                 return super.onOptionsItemSelected(item);

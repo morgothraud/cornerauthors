@@ -9,6 +9,7 @@ public class Author {
     private String name;
     private NewsPaper newsPaper;
     private ArrayList<Article> articles;
+    private String imageUrl;
     private int authorId;
 
     public Author(String name){
@@ -50,5 +51,13 @@ public class Author {
 
     public void setAuthorId(int authorId) {
         this.authorId = authorId;
+    }
+
+    public String getImageUrl() {
+        return imageUrl;
+    }
+
+    public void setImageUrl(String imageUrl) {
+        this.imageUrl = imageUrl;
     }
 }

@@ -28,6 +28,7 @@ import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.view.inputmethod.EditorInfo;
 import android.view.inputmethod.InputMethodManager;
+import android.widget.AbsListView;
 import android.widget.AdapterView;
 import android.widget.EditText;
 import android.widget.ListView;
@@ -52,11 +53,12 @@ import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.List;
-public class MainActivity extends BaseActivity {
+public class MainActivity extends BaseActivity implements AbsListView.OnScrollListener {
 
     // Log tag
     private static final String TAG = MainActivity.class.getSimpleName();
     private MaterialSearchView searchView;
+    private static int count;
     // Billionaires json url
    // private static final String url = "https://raw.githubusercontent.com/mobilesiri/Android-Custom-Listview-Using-Volley/master/richman.json";
     private static final String SabahUrl = "https://gist.githubusercontent.com/anonymous/7dae51e5c07f078a023b/raw/822a479bbacda6e72347aec4f286f039bc001ad2/blob.json";
@@ -72,6 +74,8 @@ public class MainActivity extends BaseActivity {
     int textlength;
     TextView search_EditText;
     private SwipeLayout swipeLayout;
+    Database db;
+    View footerView;
 
     private boolean isSearchOpened = false;
     private EditText edtSeach;
@@ -80,10 +84,14 @@ public class MainActivity extends BaseActivity {
 
     //    setContentView(R.layout.activity_main);
         super.onCreate(savedInstanceState);
+        overridePendingTransition(R.anim.fade_in, R.anim.fade_out);
         getLayoutInflater().inflate(R.layout.activity_main, frameLayout);
         listView = (ListView) findViewById(R.id.list);
         adapter = new CustomListAdapter(this, listItemElementList);
         listView.setAdapter(adapter);
+        getSupportActionBar().setTitle(osArray[position]);
+        db = new Database(this);
+        count=0;
         /**
          * Setting title and itemChecked
          */
@@ -99,9 +107,9 @@ public class MainActivity extends BaseActivity {
 
         // Creating volley request obj
         listFreshArticles(SabahUrl,"Sabah");
-        listFreshArticles(RadikalUrl,"Radikal");
-        listFreshArticles(MilliyetUrl, "Milliyet");
-        listFreshArticles(CumhuriyetUrl,"Cumhuriyet");
+        //listFreshArticles(RadikalUrl,"Radikal");
+     //   listFreshArticles(MilliyetUrl, "Milliyet");
+     //   listFreshArticles(CumhuriyetUrl,"Cumhuriyet");
         setOnClickforListViewItem();
 
         searchView = (MaterialSearchView) findViewById(R.id.search_view);
@@ -149,7 +157,7 @@ public class MainActivity extends BaseActivity {
                 //Do some magic
                 DrawerLayout mDrawerLayout = (DrawerLayout)findViewById(R.id.drawer_layout);
                 mDrawerLayout.closeDrawers();
-             //   getSupportActionBar().hide();
+                getSupportActionBar().hide();
             }
 
             @Override
@@ -172,6 +180,46 @@ public class MainActivity extends BaseActivity {
             }
         });
 
+        listView.setOnScrollListener(this);
+        footerView = getLayoutInflater().inflate(R.layout.load_more_footer, null);
+        listView.addFooterView(footerView);
+    }
+
+    public void favoriteAuthorsToDB(int position) {
+
+        ListItemElement le = (ListItemElement) listView.getItemAtPosition(position);
+        Article a = new Article();
+        Author au = new Author();
+        NewsPaper n = new NewsPaper(le.getSource());
+        au.setNewsPaper(n);
+        au.setName(le.getName());
+        au.setImageUrl(le.getThumbnailUrl());
+        a.setAuthor(au);
+        Log.d("isim",a.getAuthor().getName());
+        a.setContent(le.getContent());
+        a.setDate(le.getYear());
+        Log.d("yıl",le.getYear());
+        a.setHeader(le.getWorth());
+        // a.setUrl(le.getThumbnailUrl());
+        db.addFavourite(a);
+    }
+
+    public void saveArticleToDB(int position) {
+        ListItemElement le = (ListItemElement) listView.getItemAtPosition(position);
+        Article a = new Article();
+        Author au = new Author();
+        NewsPaper n = new NewsPaper(le.getSource());
+        au.setNewsPaper(n);
+        au.setName(le.getName());
+        au.setImageUrl(le.getThumbnailUrl());
+        a.setAuthor(au);
+        Log.d("isim",a.getAuthor().getName());
+        a.setContent(le.getContent());
+        a.setDate(le.getYear());
+        Log.d("yıl",le.getYear());
+        a.setHeader(le.getWorth());
+       // a.setUrl(le.getThumbnailUrl());
+        db.addArticle(a);
     }
 
     public void setOnClickforListViewItem( ){
@@ -195,31 +243,26 @@ public class MainActivity extends BaseActivity {
         char[]c = s.toCharArray();
 
         for (int i = 0; i <c.length ; i++) {
-            int j = c[i];
-             Log.d("TYU",String.valueOf(c[i])+  j );
-         //   Log.d("TYU2",String.valueOf(c[i]));
-            if(j == 775) break;
-          //  if(c[i]=='i') c[i]=((char) 105);
             if(i==0) c[i]=Character.toUpperCase(c[i]);
             if (c[i] == ' ') {c[i+1]=Character.toUpperCase(c[i+1]); continue;}
 
         }
-        Log.d("EFD",String.valueOf('i'));
+    //    Log.d("EFD",String.valueOf('i'));
         return fin =  String.valueOf(c);
 
     }
 
+    private int responseCount = -1;
     public void listFreshArticles(String jsonUrl,final String newpaper){
         JsonArrayRequest billionaireReq = new JsonArrayRequest(jsonUrl,
                 new Response.Listener<JSONArray>() {
                     @Override
                     public void onResponse(JSONArray response) {
-
+                        responseCount = response.length();
                         Log.d(TAG, response.toString());
                         hidePDialog();
-
                         // Parsing json
-                        for (int i = 0; i < response.length(); i++) {
+                        for (int i = count; i < count+10; i++) {
                             try {
                                 JSONObject obj = response.getJSONObject(i);
                                 ListItemElement listItemElement = new ListItemElement();
@@ -234,13 +277,16 @@ public class MainActivity extends BaseActivity {
                                 // adding Billionaire to listItemElement array
                                 listItemElementList.add(listItemElement);
 
+
                             } catch (JSONException e) {
                                 e.printStackTrace();
+
                             } catch (UnsupportedEncodingException e) {
                                 e.printStackTrace();
                             }
 
                         }
+                        count+=10;
 
                         // notifying list adapter about data changes
                         // so that it renders the list view with updated data
@@ -282,6 +328,7 @@ public class MainActivity extends BaseActivity {
 
         MenuItem item = menu.findItem(R.id.action_search);
         searchView.setMenuItem(item);
+        menu.findItem(R.id.action_save).setVisible(false);
         return true;
    /*     MenuInflater inflater = getMenuInflater();
         inflater.inflate(R.menu.main, menu);
@@ -408,4 +455,26 @@ public class MainActivity extends BaseActivity {
     }
 
 
-}
+    @Override
+    public void onScroll(AbsListView view, int firstVisibleItem,
+                         int visibleItemCount, int totalItemCount) {
+        Log.d("responseCount", String.valueOf(responseCount+1) + " - " + totalItemCount);
+        if (totalItemCount==responseCount+1) {
+            listView.removeFooterView(footerView);
+//          footerView.setVisibility(View.GONE);
+
+        }
+        }
+
+
+    @Override
+    public void onScrollStateChanged(AbsListView l, int scrollState) {
+        if (scrollState == SCROLL_STATE_IDLE) {
+            if (listView.getLastVisiblePosition() >= listView.getCount() - 1 - 0) {
+                listFreshArticles(SabahUrl,"Sabah");
+            }
+
+            }
+        }
+    }
+

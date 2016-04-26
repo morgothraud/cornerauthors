@@ -21,13 +21,13 @@ public class ListNewsPapersActivity extends BaseActivity {
         super.onCreate(savedInstanceState);
        // setContentView(R.layout.newspapers_list);
          getLayoutInflater().inflate(R.layout.newspapers_list, frameLayout);
-
+        overridePendingTransition(R.anim.fade_in, R.anim.fade_out);
         Context context = getApplicationContext();
         LayoutInflater inflater = (LayoutInflater) context.getSystemService( Context.LAYOUT_INFLATER_SERVICE );
         View view = inflater.inflate(R.layout.newspapers_list, frameLayout);
         newsListView = (ListView) view.findViewById(R.id.newsPaperList);
        // setTitle(listArray[position]);
-
+        getSupportActionBar().setTitle(osArray[position]);
         mDrawerList.setItemChecked(position, true);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         createsNewPaperListMenu();

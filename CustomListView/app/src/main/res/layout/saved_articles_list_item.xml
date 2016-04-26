@@ -37,12 +37,12 @@
         android:padding="10dp">
 
         <!-- Thumbnail Image -->
-        <com.android.volley.toolbox.NetworkImageView
+        <com.example.eray.customlistview.CircleImageView
             android:id="@+id/thumbnail"
             android:layout_width="80dp"
             android:layout_height="80dp"
             android:layout_alignParentLeft="true"
-            android:layout_marginRight="8dp" />
+            android:layout_marginRight="8dp"/>
 
         <!-- Name of billionaire -->
         <TextView

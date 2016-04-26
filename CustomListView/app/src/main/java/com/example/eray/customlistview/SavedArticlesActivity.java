@@ -3,8 +3,11 @@ package com.example.eray.customlistview;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.Handler;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
 import android.view.View;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
@@ -33,6 +36,7 @@ public class SavedArticlesActivity extends BaseActivity {
     ListView newsListView;
     ListView listView;
     MainActivity m;
+    Database db;
     public CustomListAdapter adapter;
     List<ListItemElement> listItemElementList = new ArrayList<ListItemElement>();
     @Override
@@ -40,20 +44,24 @@ public class SavedArticlesActivity extends BaseActivity {
         super.onCreate(savedInstanceState);
         // setContentView(R.layout.newspapers_list);
         getLayoutInflater().inflate(R.layout.saved_articles, frameLayout);
+        overridePendingTransition(R.anim.fade_in, R.anim.fade_out);
         // setTitle(listArray[position]);
+        db = new Database(this);
         listView = (ListView) findViewById(R.id.listSaved);
-        adapter = new CustomListAdapter(this, listItemElementList);
+        adapter = new CustomListAdapter(this, listItemElementList,this);
         listView.setAdapter(adapter);
+        getSupportActionBar().setTitle(osArray[position]);
         listView.setEmptyView(findViewById(R.id.empty));
         mDrawerList.setItemChecked(position, true);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-        ReadBtn();
+      //  ReadBtn();
+        listFromDB();
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
 
                 Intent splash = new Intent(SavedArticlesActivity.this, SplashActivity.class);
-                splash.putExtra("content", listItemElementList.get(Integer.parseInt((String) view.getTag())).getContent());
+                splash.putExtra("content", listItemElementList.get(position).getContent());
 
                 ListItemElement le = (ListItemElement)(listView.getItemAtPosition(position));
                 splash.putExtra("title",le.getWorth());
@@ -62,6 +70,47 @@ public class SavedArticlesActivity extends BaseActivity {
         });
     }
 
+    protected void removeAnim(View rowView, final int positon) {
+        final Animation animation = AnimationUtils.loadAnimation(
+                SavedArticlesActivity.this, R.anim.slide_out);
+        rowView.startAnimation(animation);
+        Handler handle = new Handler();
+        handle.postDelayed(new Runnable() {
+
+            public void run() {
+                listItemElementList.remove(positon);
+                adapter.notifyDataSetChanged();
+            }
+        }, 700);}
+
+    public void deleteArticleFromDB(String tag) {
+        db.deleteArticleWithId(Integer.parseInt(tag));
+        db.getTableAsString("articles");
+    }
+
+    public void listFromDB () {
+
+        // Reading all contacts
+        Log.d("Reading: ", "Reading all contacts..");
+        List<Article> contacts = db.getAllArticles();
+
+        for (Article cn : contacts) {
+            String log = "Id: " + cn.getId() + cn.getHeader() + cn.getDate();
+            // Writing Contacts to log
+            Log.d("Name: ", log);
+            ListItemElement listItemElement = new ListItemElement();
+            listItemElement.setName(cn.getAuthor().getName());
+            listItemElement.setThumbnailUrl(cn.getAuthor().getImageUrl());
+            listItemElement.setWorth(cn.getHeader());
+            listItemElement.setYear(cn.getDate());
+            listItemElement.setSource(cn.getAuthor().getNewsPaper().name);
+            listItemElement.setContent(cn.getContent());
+            listItemElement.setTag(String.valueOf(cn.getId()));
+            Log.d("ID", String.valueOf(cn.getId()));
+            listItemElementList.add(listItemElement);
+        }
+        adapter.notifyDataSetChanged();
+    }
 
     public void listFreshArticles(String file,final String newpaper) throws JSONException {
 
@@ -153,7 +202,9 @@ public class SavedArticlesActivity extends BaseActivity {
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
 
                 Intent splash = new Intent(SavedArticlesActivity.this,SplashActivity.class);
-                splash.putExtra("content", listItemElementList.get(Integer.parseInt((String)view.getTag())).getContent());
+                splash.putExtra("content", listItemElementList.get(position).getContent());
+                ListItemElement le = (ListItemElement)(listView.getItemAtPosition(position));
+                splash.putExtra("title",le.getWorth());
                 startActivityForResult(splash, 1);
             }
         });
@@ -164,5 +215,14 @@ public class SavedArticlesActivity extends BaseActivity {
         adapter.notifyDataSetChanged();
         // totalClassmates.setText("(" + friendsList.size() + ")"); //update total friends in list
 
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        MenuInflater inflater = getMenuInflater();
+        inflater.inflate(R.menu.menu_main, menu);
+        menu.findItem(R.id.action_search).setVisible(false);
+        menu.findItem(R.id.action_save).setVisible(false);
+        return true;
     }
 }

@@ -1,20 +1,13 @@
 package com.example.eray.customlistview;
 
 
-import android.app.Activity;
-import android.app.AlertDialog;
 import android.content.Context;
-import android.content.DialogInterface;
-import android.content.SharedPreferences;
 import android.os.Handler;
-import android.preference.PreferenceManager;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
-import android.widget.EditText;
-import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -28,14 +21,10 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
-import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
 public class CustomListAdapter extends BaseAdapter {
@@ -52,6 +41,8 @@ public class CustomListAdapter extends BaseAdapter {
     private LayoutInflater inflater;
     private List<ListItemElement> billionairesItems;
     ImageLoader imageLoader = AppController.getInstance().getImageLoader();
+    private Context savedActivityContext;
+    private Context favedActivityContext;
 
     public CustomListAdapter(MainActivity activity, List<ListItemElement> billionairesItems) {
         this.activity = activity;
@@ -66,20 +57,18 @@ public class CustomListAdapter extends BaseAdapter {
 
     }
 
-    public CustomListAdapter(SavedArticlesActivity savedArticlesActivity, List<ListItemElement> listItemElementList) {
+    public CustomListAdapter(SavedArticlesActivity savedArticlesActivity, List<ListItemElement> listItemElementList,Context context) {
         this.savedActivity = savedArticlesActivity;
         this.billionairesItems = listItemElementList;
         saved=true;
+        this.savedActivityContext =context;
     }
 
-    public CustomListAdapter(FavoriteAuthorsActivity fav, List<ListItemElement> listItemElementList) {
+    public CustomListAdapter(FavoriteAuthorsActivity fav, List<ListItemElement> listItemElementList,Context context) {
         this.favoritesActivity = fav;
         this.billionairesItems = listItemElementList;
         faved=true;
-    }
-
-    void destroy() {
-
+        this.favedActivityContext = context;
     }
 
     @Override
@@ -147,7 +136,7 @@ public class CustomListAdapter extends BaseAdapter {
             //    holder.name.setText(getItem(position));
 
             //handling buttons event
-            holder.btnDown.setOnClickListener(onSaveDelete(position, holder));
+            holder.btnDown.setOnClickListener(onSaveDelete(position, holder,convertView));
 
             return convertView;
         }
@@ -199,8 +188,7 @@ public class CustomListAdapter extends BaseAdapter {
             //    holder.name.setText(getItem(position));
 
             //handling buttons event
-            holder.btnDown.setOnClickListener(onEditListener(position, holder));
-            holder.btnStar.setOnClickListener(onDeleteListener(position, holder));
+            holder.btnDown.setOnClickListener(onFavDelete(position, holder,convertView));
 
             return convertView;
         }
@@ -345,45 +333,15 @@ public class CustomListAdapter extends BaseAdapter {
             public void onClick(View v) {
                      // showEditDialog(position, holder);
 
+                activity.saveArticleToDB(position);
+
                 //date article name authorName authorImage content
-                try {
 
-                    FileOutputStream fileout=activity.openFileOutput("savedArticles.txt", activity.MODE_APPEND);
-
-                    OutputStreamWriter outputWriter=new OutputStreamWriter(fileout);
-                    ListItemElement le = (ListItemElement)(activity.listView.getItemAtPosition(position));
-                    try {
-
-                        JSONObject obj = new JSONObject();
-                        JSONArray arr = new JSONArray();
-
-                        obj.put("date",le.getYear());
-                        obj.put("articleName",le.getWorth());
-                        obj.put("authorName",le.getSource());
-                        obj.put("authorImage",le.getThumbnailUrl());
-                        obj.put("content",le.getContent());
-                        arr.put(obj);
-
-
-                      Log.d("JSON PARSING", obj.toString());
-                        Log.d("PATH", activity.getFilesDir().getAbsolutePath().toString());
-                        outputWriter.write(obj.toString()+",");
-                    } catch (Throwable t) {
-                        Log.e("My App", "Could not parse malformed JSON: \"" + "\"");
-                            Log.w("FATAL", t.toString());
-                    }
-
-                    outputWriter.close();
-
-                    //display file saved message
                     Toast.makeText(activity.getBaseContext(), "Article saved successfully!",
                             Toast.LENGTH_SHORT).show();
                     holder.swipeLayout.close();
                     activity.updateAdapter();
 
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
             }
         };
 
@@ -396,34 +354,13 @@ public class CustomListAdapter extends BaseAdapter {
             @Override
             public void onClick(View v) {
                 //friends.remove(position);
-
-
                 //date article name authorName authorImage content
-                try {
-                    FileOutputStream fileout=activity.openFileOutput("favoriteAuthors.txt", activity.MODE_APPEND);
-                    OutputStreamWriter outputWriter=new OutputStreamWriter(fileout);
-                    ListItemElement le = (ListItemElement)(activity.listView.getItemAtPosition(position));
-                    try {
-                        JSONObject obj = new JSONObject();
-                        JSONArray arr = new JSONArray();
-                        obj.put("authorName",le.getName());
-                        obj.put("authorImage", le.getThumbnailUrl());
-                        arr.put(obj);
-                        outputWriter.write(obj.toString()+",");
-                    } catch (Throwable t) {
-                        Log.e("My App", "Could not parse malformed JSON: \"" + "\"");
-                        Log.w("FATAL", t.toString());
-                    }
-                    outputWriter.close();
-                    //display file saved message
-                    Toast.makeText(activity.getBaseContext(), le.getName()+" is added to Favorites!",
-                            Toast.LENGTH_SHORT).show();
-                    holder.swipeLayout.close();
-                    activity.updateAdapter();
 
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
+                activity.favoriteAuthorsToDB(position);
+                //date article name authorName authorImage content
+
+                Toast.makeText(activity.getBaseContext(), "Favorited",
+                        Toast.LENGTH_SHORT).show();
                 holder.swipeLayout.close();
                 activity.updateAdapter();
             }
@@ -431,75 +368,44 @@ public class CustomListAdapter extends BaseAdapter {
     }
 
 
-    private View.OnClickListener onSaveDelete(final int position, final ViewHolder holder) {
+    private View.OnClickListener onSaveDelete(final int position, final ViewHolder holder, final View r) {
         return new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 //friends.remove(position);
 
-                    String s="";
-                    //reading text from file
-                    try {
-                        FileInputStream fileIn=savedActivity.openFileInput("savedArticles.txt");
-                        InputStreamReader InputRead= new InputStreamReader(fileIn);
-                        char[] inputBuffer= new char[100];
-
-                        int charRead;
-                        while ((charRead=InputRead.read(inputBuffer))>0) {
-                            // char to string conversion
-                            String readstring=String.copyValueOf(inputBuffer,0,charRead);
-                            s +=readstring;
-                        }
-                        InputRead.close();
-                        fileIn.close();
-                    } catch (Exception e) {
-                        e.printStackTrace();
-                    }
-
-
-                String tmp = s;
-                Log.d("TUMPN",s);
-                //s = "{ 'articles': [" + tmp + "]}";
-                tmp = "["+tmp+"]";
-
-                String strFin = s;
-                strFin = strFin.substring(0,strFin.length()-1);
-                strFin = "{ 'articles': [" + strFin + "]}";
-
-                JSONObject obj = null;
-                JSONArray jsonArray = null;
-                try {
-                    obj = new JSONObject(strFin);
-                    jsonArray =obj.getJSONArray("articles");
-                for (int i = 0; i < jsonArray.length(); i++) {
-                    if (i == position)
-                    {
-                        jsonArray.remove(i);
-                    }
+                ListItemElement le = (ListItemElement) savedActivity.listView.getItemAtPosition(position);
+                Log.d("TAG",le.getTag() + " - " + le.getName());
+                if(savedActivityContext instanceof SavedArticlesActivity){
+                    Log.d("in,","in");
+                    ((SavedArticlesActivity) savedActivityContext).deleteArticleFromDB(le.getTag());
                 }
-                    try {
-                        FileOutputStream fileout=savedActivity.openFileOutput("savedArticles.txt", savedActivity.MODE_PRIVATE);
-                        OutputStreamWriter outputWriter=new OutputStreamWriter(fileout);
-                        try {
-                            Log.d("IMP",jsonArray.toString());
-                            String fincik = jsonArray.toString();
-                            fincik = fincik.substring(1,fincik.length()-1);
-                            Log.d("fincik",fincik);
-                            outputWriter.write(replaceNull(fincik+","));
-                        } catch (Throwable t) {
-                            Log.e("My App", "Could not parse malformed JSON: \"" + "\"");
-                            Log.w("FATAL", t.toString());
-                        }
-                        outputWriter.close();
-
-                    } catch (Exception e) {
-                        e.printStackTrace();
-                    }
-                } catch (JSONException e) {
-                    e.printStackTrace();
-                }
+                //date article name authorName authorImage content
                 holder.swipeLayout.close();
-                savedActivity.updateAdapter();
+                ((SavedArticlesActivity) savedActivityContext).updateAdapter();
+                ((SavedArticlesActivity) savedActivityContext).removeAnim(r, position);
+
+            }
+        };
+    }
+
+    private View.OnClickListener onFavDelete(final int position, final ViewHolder holder, final View r) {
+        return new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                //friends.remove(position);
+
+                ListItemElement le = (ListItemElement) favoritesActivity.listView.getItemAtPosition(position);
+                Log.d("TAG",le.getTag() + " - " + le.getName());
+                if(favedActivityContext instanceof FavoriteAuthorsActivity){
+                    Log.d("in,","in");
+                    ((FavoriteAuthorsActivity) favedActivityContext).deleteArticleFromDB(le.getTag());
+                }
+                //date article name authorName authorImage content
+                holder.swipeLayout.close();
+                ((FavoriteAuthorsActivity) favedActivityContext).updateAdapter();
+                ((FavoriteAuthorsActivity) favedActivityContext).removeAnim(r, position);
+
             }
         };
     }
@@ -529,11 +435,12 @@ public class CustomListAdapter extends BaseAdapter {
         public ViewHolder(View v) {
             swipeLayout = (SwipeLayout)v.findViewById(R.id.swipe_layout);
 
-            if(mained||faved||searched) {
+            if(mained||searched) {
                 btnStar = v.findViewById(R.id.btnStar);
                 btnDown = v.findViewById(R.id.btnDown);
             }
             if(saved) btnDown = v.findViewById(R.id.btnDelete);
+            if(faved) btnDown = v.findViewById(R.id.btnDeleteFav);
 
             name = (TextView) v.findViewById(R.id.name);
             swipeLayout.setShowMode(SwipeLayout.ShowMode.LayDown);

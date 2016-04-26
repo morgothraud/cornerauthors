@@ -16,24 +16,10 @@
             android:layout_width="0dp"
             android:layout_height="match_parent"
             android:layout_weight="1"
-            android:background="#FF6D69">
-
-            <ImageView
-                android:id="@+id/btnDown"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_centerInParent="true"
-                android:src="@drawable/ic_file_download_white_48dp" />
-        </RelativeLayout>
-
-        <RelativeLayout
-            android:layout_width="0dp"
-            android:layout_height="match_parent"
-            android:layout_weight="1"
             android:background="#FFB866">
 
             <ImageView
-                android:id="@+id/btnStar"
+                android:id="@+id/btnDeleteFav"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_centerInParent="true"
@@ -51,12 +37,12 @@
         android:padding="10dp">
 
         <!-- Thumbnail Image -->
-        <com.android.volley.toolbox.NetworkImageView
+        <com.example.eray.customlistview.CircleImageView
             android:id="@+id/thumbnail"
             android:layout_width="80dp"
             android:layout_height="80dp"
             android:layout_alignParentLeft="true"
-            android:layout_marginRight="8dp" />
+            android:layout_marginRight="8dp"/>
 
         <!-- Name of billionaire -->
         <TextView

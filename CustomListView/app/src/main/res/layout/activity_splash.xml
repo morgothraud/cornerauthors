@@ -8,7 +8,8 @@
     <LinearLayout
         android:orientation="vertical" android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:id ="@+id/read_article_layout_id">
+        android:id ="@+id/read_article_layout_id"
+        android:background="#fff">
 
         <ScrollView
             android:id="@+id/horizontalScrollView1"
@@ -18,14 +19,19 @@
             android:layout_alignParentTop="true"
             android:scrollbars="none" >
         <TextView
-            android:fontFamily="sans-serif"
+            android:fontFamily="sans-serif-light"
+            android:lineSpacingMultiplier="1.2"
+            android:letterSpacing="0.010"
             android:textStyle="normal"
-            android:textSize="16dp"
-            android:layout_margin="20dp"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:textSize="15.3dp"
+            android:singleLine="false"
+            android:layout_margin="15dp"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:shadowColor="#000"
+            android:shadowRadius="1"
             android:id="@+id/articleContent_TextView"
-            android:textColor="#000000"
+            android:textColor="#494949"
             android:scrollbars = "vertical"/>
         </ScrollView>
     </LinearLayout>

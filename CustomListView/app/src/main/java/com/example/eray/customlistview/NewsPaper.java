@@ -9,4 +9,9 @@ public class NewsPaper {
     String name;
     ArrayList<Author> authors;
 
+    public NewsPaper(String name) {
+        this.name = name;
+
+    }
+
 }
